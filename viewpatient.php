@@ -1,27 +1,70 @@
+<?php
+include 'includes/config.php'; // Include the database configuration file
+session_start(); // Start the session to access session variables
+
+// Redirect to login page if the user is not authenticated
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+?>
+<?php
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "dduungu";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Initialize search query
+$search_query = "";
+
+// Check if the search form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $search_query = $_POST['search_query'] ?? '';
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patients Data</title>
-    <link href="styles.css"  rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .modal-body p {
+            margin-bottom: 0.5rem;
+        }
+        .modal-body p strong {
+            display: inline-block;
+            width: 150px;
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <h2>Menu</h2>
-        <ul>
-            <li><a href="index.php"><i class="fas fa-home"></i> Home</a></li>
-            <li ><a href="addpatient.php"><i class="fas fa-user"></i> <span style="font-size: 25px; color: black;">ADD PATIENT</span></a></li>
-            <li><a href="#"><i class="fas fa-briefcase"></i> View Patients</a></li>
-            <li><a href="contact.php"><i class="fas fa-envelope"></i> Contact</a></li>
-            <li><a href=""><i class="fas fa-cog"></i> LOGOUT</a></li>
-        </ul>
-    </div>
+    <?php include 'sidebar.php'; ?>
 
     <div class="content">
+        <div class="welcome">
+            <span>Welcome, <?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span>
+        </div>
         <h2>Patients Data</h2>
+        
+        <!-- Search Form -->
+        <form id="searchForm" action="viewpatient.php" method="POST" class="form-inline mb-3">
+            <input type="text" name="search_query" class="form-control mr-2" placeholder="Search patients" value="<?php echo htmlspecialchars($search_query); ?>" oninput="autoSearch()">
+        </form>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -52,29 +95,22 @@
                     <th>Etiology</th>
                     <th>Deciduous Dentition</th>
                     <th>Adults</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "dduungu";
-
-                // Create connection
-                $conn = new mysqli($servername, $username, $password, $dbname);
-
-                // Check connection
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
+                // Modify the SQL query to filter results based on the search input
+                if (empty($search_query)) {
+                    $sql = "SELECT * FROM patients";
+                } else {
+                    $sql = "SELECT * FROM patients WHERE name LIKE '%$search_query%' OR phone LIKE '%$search_query%' OR medical_history LIKE '%$search_query%'";
                 }
-
-                $sql = "SELECT * FROM patients";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
                     while($row = $result->fetch_assoc()) {
-                        echo "<tr>";
+                        echo "<tr onclick='showPatientDetails(" . json_encode($row) . ")'>";
                         echo "<td>" . $row["id"] . "</td>";
                         echo "<td>" . $row["name"] . "</td>";
                         echo "<td>" . $row["dob"] . "</td>";
@@ -102,10 +138,16 @@
                         echo "<td>" . $row["etiology"] . "</td>";
                         echo "<td>" . $row["deciduous_dentition"] . "</td>";
                         echo "<td>" . $row["adults"] . "</td>";
+                        echo "<td>
+                                <div class='btn-group' role='group'>
+                                    <a href='editpatient.php?id=" . $row["id"] . "' class='btn btn-primary btn-sm'>Edit</a>
+                                    <a href='image2.php?id=" . $row["id"] . "' class='btn btn-secondary btn-sm'>Add Image</a>
+                                </div>
+                              </td>";
                         echo "</tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='27'>No patients found</td></tr>";
+                    echo "<tr><td colspan='28'>No patients found</td></tr>";
                 }
 
                 $conn->close();
@@ -113,5 +155,30 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="patientModal" tabindex="-1" role="dialog" aria-labelledby="patientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="patientModalLabel">Patient Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Patient details will be populated here -->
+                    <div id="patientDetails"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

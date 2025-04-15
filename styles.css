@@ -21,20 +21,25 @@ body {
     left: 0;
     top: 0;
     overflow-y: auto;
+    background-color: #343a40;
+    padding-top: 20px;
 }
 
 .sidebar h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .sidebar ul {
     list-style: none;
     padding: 0;
+    list-style-type: none;
 }
 
 .sidebar ul li {
     margin: 15px 0;
+    padding: 15px;
+    text-align: center;
 }
 
 .sidebar ul li a {
@@ -46,16 +51,24 @@ body {
     gap: 10px;
     padding: 10px;
     border-radius: 5px;
+    display: block;
 }
 
 .sidebar ul li a:hover {
     background: #0056b3;
+    background-color: #495057;
 }
 
 .content {
     margin-left: 250px;
     padding: 20px;
     flex: 1;
+    flex-grow: 1;
+}
+
+.welcome {
+    text-align: right;
+    margin-bottom: 20px;
 }
 
 /* Form Styling */
