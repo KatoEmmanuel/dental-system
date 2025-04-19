@@ -314,33 +314,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_appointment']))
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        // Fetch pending appointments from the database
-                        $sql = "SELECT id, patient_name, phone, email, doctor_name, appointment_date, appointment_time FROM appointments WHERE status = 'Done'";
-                        $result = $conn->query($sql);
+    <?php
+    // Fetch done appointments from the database
+    $sql = "SELECT id, patient_name, phone, email, doctor_name, appointment_date, appointment_time FROM appointments WHERE status = 'Done'";
+    $result = $conn->query($sql);
 
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<tr>";
-                                echo "<td>" . htmlspecialchars($row['patient_name']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['phone']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['doctor_name']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['appointment_date']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['appointment_time']) . "</td>";
-                                echo '<td>';
-                                echo '<form action="appointment.php" method="POST" style="display:inline-block;">';
-                                echo '<input type="hidden" name="edit_id" value="' . $row['id'] . '">';
-                                echo '<button type="submit" class="btn btn-warning">Edit</button>';
-                                echo '</form>';
-                                echo '</td>';
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='7' class='text-center'>No pending appointments</td></tr>";
-                        }
-                        ?>
-                    </tbody>
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . htmlspecialchars($row['patient_name']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['phone']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['doctor_name']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['appointment_date']) . "</td>";
+            echo "<td>" . htmlspecialchars($row['appointment_time']) . "</td>";
+            echo '<td>';
+            echo '<form action="appointment.php" method="POST" style="display:inline-block;">';
+            echo '<input type="hidden" name="edit_id" value="' . $row['id'] . '">';
+            echo '<button type="submit" class="btn btn-warning">Edit</button>';
+            echo '</form>';
+            echo '<form action="appointment.php" method="POST" style="display:inline-block; margin-left: 5px;">';
+            echo '<input type="hidden" name="delete_id" value="' . $row['id'] . '">';
+            echo '<button type="submit" class="btn btn-danger" onclick="return confirm(\'Are you sure you want to delete this appointment?\')">';
+            echo '<i class="fas fa-trash-alt"></i>'; // Font Awesome trash icon
+            echo '</button>';
+            echo '</form>';
+            echo '</td>';
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='7' class='text-center'>No done appointments</td></tr>";
+    }
+    ?>
+</tbody>
                 </table>
             </div>
         </div>

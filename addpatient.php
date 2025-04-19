@@ -35,44 +35,48 @@ if ($result->num_rows > 0) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $dob = $_POST['dob'];
-    $age = $_POST['age'];
-    $gender = $_POST['gender'];
-    $occupation = $_POST['occupation'];
-    $phone = $_POST['phone'];
-    $medical_history = $_POST['medical_history'];
-    $parafunctional_behavior = $_POST['parafunctional_behavior'];
-    $chief_complaint_1 = $_POST['chief_complaint_1'];
-    $chief_complaint_2 = $_POST['chief_complaint_2'];
-    $chief_complaint_3 = $_POST['chief_complaint_3'];
-    $chief_complaint_4 = $_POST['chief_complaint_4'];
-    $pre_treatment = $_POST['pre_treatment'];
-    $during_rx = $_POST['during_rx'];
-    $post_rx = $_POST['post_rx'];
-    $skeletal_features = implode(',', $_POST['skeletal_features']);
-    $vertical_overlap_class = $_POST['vertical_overlap_class'];
-    $vertical_overlap_checkboxes = implode(',', $_POST['vertical_overlap_checkboxes']);
-    $lower_crowding = implode(',', $_POST['lower_crowding']);
-    $upper_crowding = implode(',', $_POST['upper_crowding']);
-    $face_profile = implode(',', $_POST['face_profile']);
-    $dental_features = implode(',', $_POST['dental_features']);
-    $contact_of_incisors = implode(',', $_POST['contact_of_incisors']);
-    $max_mand_relation = $_POST['max_mand_relation'];
-    $etiology = implode(',', $_POST['etiology']);
-    $deciduous_dentition = implode(',', $_POST['deciduous_dentition']);
-    $adults = implode(',', $_POST['adults']);
+    $name = $_POST['name'] ?? '';
+    $dob = $_POST['dob'] ?? '';
+    $age = $_POST['age'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+    $occupation = $_POST['occupation'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $medical_history = $_POST['medical_history'] ?? '';
+    $parafunctional_behavior = $_POST['parafunctional_behavior'] ?? '';
+    $chief_complaint_1 = $_POST['chief_complaint_1'] ?? '';
+    $chief_complaint_2 = $_POST['chief_complaint_2'] ?? '';
+    $chief_complaint_3 = $_POST['chief_complaint_3'] ?? '';
+    $chief_complaint_4 = $_POST['chief_complaint_4'] ?? '';
+    $pre_treatment = $_POST['pre_treatment'] ?? '';
+    $during_rx = $_POST['during_rx'] ?? '';
+    $post_rx = $_POST['post_rx'] ?? '';
+    $skeletal_features = isset($_POST['skeletal_features']) ? implode(',', $_POST['skeletal_features']) : '';
+    $vertical_overlap_class = $_POST['vertical_overlap_class'] ?? '';
+    $vertical_overlap_checkboxes = isset($_POST['vertical_overlap_checkboxes']) ? implode(',', $_POST['vertical_overlap_checkboxes']) : '';
+    $lower_crowding = isset($_POST['lower_crowding']) ? implode(',', $_POST['lower_crowding']) : '';
+    $upper_crowding = isset($_POST['upper_crowding']) ? implode(',', $_POST['upper_crowding']) : '';
+    $face_profile = isset($_POST['face_profile']) ? implode(',', $_POST['face_profile']) : '';
+    $dental_features = isset($_POST['dental_features']) ? implode(',', $_POST['dental_features']) : '';
+    $contact_of_incisors = isset($_POST['contact_of_incisors']) ? implode(',', $_POST['contact_of_incisors']) : '';
+    $max_mand_relation = $_POST['max_mand_relation'] ?? '';
+    $etiology = isset($_POST['etiology']) ? implode(',', $_POST['etiology']) : '';
+    $deciduous_dentition = isset($_POST['deciduous_dentition']) ? implode(',', $_POST['deciduous_dentition']) : '';
+    $adults = isset($_POST['adults']) ? implode(',', $_POST['adults']) : '';
 
-    $sql = "INSERT INTO patients (name, dob, age, gender, occupation, phone, medical_history, parafunctional_behavior, chief_complaint_1, chief_complaint_2, chief_complaint_3, chief_complaint_4, pre_treatment, during_rx, post_rx, skeletal_features, vertical_overlap_class, vertical_overlap_checkboxes, lower_crowding, upper_crowding, face_profile, dental_features, contact_of_incisors, max_mand_relation, etiology, deciduous_dentition, adults)
-    VALUES ('$name', '$dob', '$age', '$gender', '$occupation', '$phone', '$medical_history', '$parafunctional_behavior', '$chief_complaint_1', '$chief_complaint_2', '$chief_complaint_3', '$chief_complaint_4', '$pre_treatment', '$during_rx', '$post_rx', '$skeletal_features', '$vertical_overlap_class', '$vertical_overlap_checkboxes', '$lower_crowding', '$upper_crowding', '$face_profile', '$dental_features', '$contact_of_incisors', '$max_mand_relation', '$etiology', '$deciduous_dentition', '$adults')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "<script>alert('New record created successfully');</script>";
+    if (empty($name) || empty($dob)) {
+        echo "<script>alert('Name and Date of Birth are required fields.');</script>";
     } else {
-        echo "<script>alert('Error: " . $sql . "\\n" . $conn->error . "');</script>";
-    }
+        $sql = "INSERT INTO patients (name, dob, age, gender, occupation, phone, medical_history, parafunctional_behavior, chief_complaint_1, chief_complaint_2, chief_complaint_3, chief_complaint_4, pre_treatment, during_rx, post_rx, skeletal_features, vertical_overlap_class, vertical_overlap_checkboxes, lower_crowding, upper_crowding, face_profile, dental_features, contact_of_incisors, max_mand_relation, etiology, deciduous_dentition, adults)
+        VALUES ('$name', '$dob', '$age', '$gender', '$occupation', '$phone', '$medical_history', '$parafunctional_behavior', '$chief_complaint_1', '$chief_complaint_2', '$chief_complaint_3', '$chief_complaint_4', '$pre_treatment', '$during_rx', '$post_rx', '$skeletal_features', '$vertical_overlap_class', '$vertical_overlap_checkboxes', '$lower_crowding', '$upper_crowding', '$face_profile', '$dental_features', '$contact_of_incisors', '$max_mand_relation', '$etiology', '$deciduous_dentition', '$adults')";
 
-    $conn->close();
+        if ($conn->query($sql) === TRUE) {
+            echo "<script>alert('New record created successfully');</script>";
+        } else {
+            echo "<script>alert('Error: " . $sql . "\\n" . $conn->error . "');</script>";
+        }
+
+        $conn->close();
+    }
 }
 ?>
 

@@ -30,54 +30,59 @@ if (isset($_GET['id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $dob = $_POST['dob'];
-    $age = $_POST['age'];
-    $gender = $_POST['gender'];
-    $occupation = $_POST['occupation'];
-    $phone = $_POST['phone'];
-    $medical_history = $_POST['medical_history'];
-    $parafunctional_behavior = $_POST['parafunctional_behavior'];
-    $chief_complaint_1 = $_POST['chief_complaint_1'];
-    $chief_complaint_2 = $_POST['chief_complaint_2'];
-    $chief_complaint_3 = $_POST['chief_complaint_3'];
-    $chief_complaint_4 = $_POST['chief_complaint_4'];
-    $pre_treatment = $_POST['pre_treatment'];
-    $during_rx = $_POST['during_rx'];
-    $post_rx = $_POST['post_rx'];
-    $skeletal_features = implode(',', $_POST['skeletal_features']);
-    $vertical_overlap_class = $_POST['vertical_overlap_class'];
-    $vertical_overlap_checkboxes = implode(',', $_POST['vertical_overlap_checkboxes']);
-    $lower_crowding = implode(',', $_POST['lower_crowding']);
-    $upper_crowding = implode(',', $_POST['upper_crowding']);
-    $face_profile = implode(',', $_POST['face_profile']);
-    $dental_features = implode(',', $_POST['dental_features']);
-    $contact_of_incisors = $_POST['contact_of_incisors'];
-    $max_mand_relation = $_POST['max_mand_relation'];
-    $etiology = implode(',', $_POST['etiology']);
-    $deciduous_dentition = implode(',', $_POST['deciduous_dentition']);
-    $adults = implode(',', $_POST['adults']);
+    $name = $_POST['name'] ?? '';
+    $dob = $_POST['dob'] ?? '';
+    $age = $_POST['age'] ?? '';
+    $gender = $_POST['gender'] ?? '';
+    $occupation = $_POST['occupation'] ?? '';
+    $phone = $_POST['phone'] ?? '';
+    $medical_history = $_POST['medical_history'] ?? '';
+    $parafunctional_behavior = $_POST['parafunctional_behavior'] ?? '';
+    $chief_complaint_1 = $_POST['chief_complaint_1'] ?? '';
+    $chief_complaint_2 = $_POST['chief_complaint_2'] ?? '';
+    $chief_complaint_3 = $_POST['chief_complaint_3'] ?? '';
+    $chief_complaint_4 = $_POST['chief_complaint_4'] ?? '';
+    $pre_treatment = $_POST['pre_treatment'] ?? '';
+    $during_rx = $_POST['during_rx'] ?? '';
+    $post_rx = $_POST['post_rx'] ?? '';
+    $skeletal_features = isset($_POST['skeletal_features']) ? implode(',', $_POST['skeletal_features']) : '';
+    $vertical_overlap_class = $_POST['vertical_overlap_class'] ?? '';
+    $vertical_overlap_checkboxes = isset($_POST['vertical_overlap_checkboxes']) ? implode(',', $_POST['vertical_overlap_checkboxes']) : '';
+    $lower_crowding = isset($_POST['lower_crowding']) ? implode(',', $_POST['lower_crowding']) : '';
+    $upper_crowding = isset($_POST['upper_crowding']) ? implode(',', $_POST['upper_crowding']) : '';
+    $face_profile = isset($_POST['face_profile']) ? implode(',', $_POST['face_profile']) : '';
+    $dental_features = isset($_POST['dental_features']) ? implode(',', $_POST['dental_features']) : '';
+    $contact_of_incisors = $_POST['contact_of_incisors'] ?? '';
+    $max_mand_relation = $_POST['max_mand_relation'] ?? '';
+    $etiology = isset($_POST['etiology']) ? implode(',', $_POST['etiology']) : '';
+    $deciduous_dentition = isset($_POST['deciduous_dentition']) ? implode(',', $_POST['deciduous_dentition']) : '';
+    $adults = isset($_POST['adults']) ? implode(',', $_POST['adults']) : '';
 
-    $sql = "UPDATE patients SET 
-            name='$name', dob='$dob', age='$age', gender='$gender', occupation='$occupation', phone='$phone', 
-            medical_history='$medical_history', parafunctional_behavior='$parafunctional_behavior', 
-            chief_complaint_1='$chief_complaint_1', chief_complaint_2='$chief_complaint_2', 
-            chief_complaint_3='$chief_complaint_3', chief_complaint_4='$chief_complaint_4', 
-            pre_treatment='$pre_treatment', during_rx='$during_rx', post_rx='$post_rx', 
-            skeletal_features='$skeletal_features', vertical_overlap_class='$vertical_overlap_class', 
-            vertical_overlap_checkboxes='$vertical_overlap_checkboxes', lower_crowding='$lower_crowding', 
-            upper_crowding='$upper_crowding', face_profile='$face_profile', dental_features='$dental_features', 
-            contact_of_incisors='$contact_of_incisors', max_mand_relation='$max_mand_relation', 
-            etiology='$etiology', deciduous_dentition='$deciduous_dentition', adults='$adults' 
-            WHERE id=$id";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "<script>alert('Record updated successfully'); window.location.href='viewpatient.php';</script>";
+    if (empty($name) || empty($dob)) {
+        echo "<script>alert('Name and Date of Birth are required fields.');</script>";
     } else {
-        echo "Error updating record: " . $conn->error;
-    }
+        // Update query
+        $sql = "UPDATE patients SET 
+                name='$name', dob='$dob', age='$age', gender='$gender', occupation='$occupation', phone='$phone', 
+                medical_history='$medical_history', parafunctional_behavior='$parafunctional_behavior', 
+                chief_complaint_1='$chief_complaint_1', chief_complaint_2='$chief_complaint_2', 
+                chief_complaint_3='$chief_complaint_3', chief_complaint_4='$chief_complaint_4', 
+                pre_treatment='$pre_treatment', during_rx='$during_rx', post_rx='$post_rx', 
+                skeletal_features='$skeletal_features', vertical_overlap_class='$vertical_overlap_class', 
+                vertical_overlap_checkboxes='$vertical_overlap_checkboxes', lower_crowding='$lower_crowding', 
+                upper_crowding='$upper_crowding', face_profile='$face_profile', dental_features='$dental_features', 
+                contact_of_incisors='$contact_of_incisors', max_mand_relation='$max_mand_relation', 
+                etiology='$etiology', deciduous_dentition='$deciduous_dentition', adults='$adults' 
+                WHERE id=$id";
 
-    $conn->close();
+        if ($conn->query($sql) === TRUE) {
+            echo "<script>alert('Record updated successfully'); window.location.href='viewpatient.php';</script>";
+        } else {
+            echo "<script>alert('Error updating record: " . $conn->error . "');</script>";
+        }
+
+        $conn->close();
+    }
 }
 ?>
 
